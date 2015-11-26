@@ -3,18 +3,28 @@
 </head>
 
 <body>
-  <h1>Welcome to our user querying engine!</h1>
-  {{> loginButtons}}
-  {{> hello}}
-  {{#each users}}
-    {{> user}}
-  {{/each}}
+  <div class="container">
+    <h1>Welcome to our user querying engine!</h1>
+    <div class="half-width">
+      <h3>Users</h3>
+      {{#each users}}
+      {{> user}}
+      {{/each}}
+    </div>
+    <div class="half-width">
+      <h3>Filtered Users</h3>
+      <div class="container-btn">
+        <button id="filter-camera">Users with a camera</button>
+        <button id="filter-tech">Users who work at a tech company</button>
+        <button id="filter-beer">Users who can get into a bar</button>
+        <button id="filter-dog">Users who have a dog</button>
+      </div>
+      {{#each filteredUsers}}
+      {{> user}}
+      {{/each}}
+    </div>
+  </div>
 </body>
-
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
-</template>
 
 <template name="user">
   <p>{{username}}</p>
