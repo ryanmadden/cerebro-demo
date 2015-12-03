@@ -37,33 +37,47 @@ if (Meteor.isClient) {
       Session.set('userFilter', {"profile.attributes": {$in: ['dog']}});
     },
     "click #filter-master": function(event) {
-      Session.set('userFilter', {  
-        $or:[  
-        {  
-          "profile.company": {  
-            $in:[  
-            "Google",
-            "IndieGoGo"
-            ]
-          }
+      var specialUserProfile = {
+        "$any": {
+          "company": ["Google", "IndieGoGo"],
+          "age": {"$gt": 20}
         },
-        {  
-          "profile.age": {  
-            $gt:20
-          }
+        "$all": {
+          "hasCamera": true,
+          "hasDog": true
         }
-        ],
-        $and:[  
-        {  
-          "profile.hasCamera":true
-        },
-        {  
-          "profile.hasDog":true
-        }
-        ]
-      });
+      };
+      Session.set('userFilter', queryTransform(specialUserProfile));
     },
   });
+
+  var queryTransform = function(obj) {
+    var output = {};
+    output.$or = convertQueryObjects(obj.$any);
+    output.$and = convertQueryObjects(obj.$all);
+    return output;
+  };
+
+  var convertQueryObjects = function(obj) {
+    var lst = [];
+    var attributes = Object.keys(obj);
+    for (var i = 0; i < attributes.length; i++) {
+      var add = {};
+      var name = "profile." + attributes[i];
+      add[name] = insertIn(obj[attributes[i]]);
+      lst.push(add);
+    }
+    return lst;
+  }
+
+  var insertIn = function(item) {
+    if (item.constructor === Array) {
+      return {$in: item};
+    }
+    else {
+      return item;
+    }
+  }
 
 }
 
@@ -98,7 +112,7 @@ if (Meteor.isServer) {
           attributes: ['camera'],
         }
       });
-       Accounts.createUser({
+      Accounts.createUser({
         username: 'kevinchen',
         email: 'kevin@yahoo.com',
         password: 'password',
