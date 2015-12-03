@@ -36,6 +36,33 @@ if (Meteor.isClient) {
     "click #filter-dog": function(event) {
       Session.set('userFilter', {"profile.attributes": {$in: ['dog']}});
     },
+    "click #filter-master": function(event) {
+      Session.set('userFilter', {  
+        $or:[  
+        {  
+          "profile.company": {  
+            $in:[  
+            "Google",
+            "IndieGoGo"
+            ]
+          }
+        },
+        {  
+          "profile.age": {  
+            $gt:20
+          }
+        }
+        ],
+        $and:[  
+        {  
+          "profile.hasCamera":true
+        },
+        {  
+          "profile.hasDog":true
+        }
+        ]
+      });
+    },
   });
 
 }
@@ -58,6 +85,20 @@ if (Meteor.isServer) {
         }
       });
       Accounts.createUser({
+        username: 'johnnybravo',
+        email: 'jbravo@yahoo.com',
+        password: 'password',
+        profile: {
+          first_name: 'Johnny',
+          last_name: 'Bravo',
+          age: 22,
+          company: 'Google',
+          hasCamera: true,
+          hasDog: true,
+          attributes: ['camera'],
+        }
+      });
+       Accounts.createUser({
         username: 'kevinchen',
         email: 'kevin@yahoo.com',
         password: 'password',
