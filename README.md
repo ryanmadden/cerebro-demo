@@ -2,7 +2,7 @@
 
 This repository contains a demo Meteor app focused on developing a user query engine. 
 
-Users can be queried by passing a JSON to the queryTransform() function like this:
+Users can be queried by passing a JSON like this to the queryTransform() function:
 
 ```
 var specialUserProfile = {
