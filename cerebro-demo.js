@@ -1,6 +1,15 @@
 if (Meteor.isClient) {
 
-  Session.set('userFilter', {});
+  Session.set('userFilter', {
+    "$any": {
+      "company": ["Google", "IndieGoGo"],
+      "age": {"$gt": 20}
+    },
+    "$all": {
+      "hasCamera": true,
+      "hasDog": true
+    }
+  });
 
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
@@ -25,16 +34,21 @@ if (Meteor.isClient) {
 
   Template.body.events({
     "click #filter-camera": function(event) {
-      Session.set('userFilter', {"profile.attributes": {$in: ['camera']}});
+      // Session.set('userFilter', {"profile.attributes": {$in: ['camera']}});
+      Session.set('userFilter', {
+        "$all": {"hasCamera": true}
+      });
     },
     "click #filter-tech": function(event) {
-      Session.set('userFilter', {"profile.company": {$in: ['Google', 'IndieGoGo']}});
+      // Session.set('userFilter', {"profile.company": {$in: ['Google', 'IndieGoGo']}});
+      Session.set('userFilter', {"$all": {"company": ["Google", "IndieGoGo"]}});
     },
     "click #filter-beer": function(event) {
-      Session.set('userFilter', {"profile.age": {$gte: 21}});
+      // Session.set('userFilter', {"profile.age": {$gte: 21}});
+      Session.set('userFilter', {"$all": {"age": {"$gt": 20}}});
     },
     "click #filter-dog": function(event) {
-      Session.set('userFilter', {"profile.attributes": {$in: ['dog']}});
+      Session.set('userFilter', {"$all": {"hasDog": true}});
     },
     "click #filter-master": function(event) {
       var specialUserProfile = {
@@ -47,37 +61,41 @@ if (Meteor.isClient) {
           "hasDog": true
         }
       };
-      Session.set('userFilter', queryTransform(specialUserProfile));
+      Session.set('userFilter', specialUserProfile);
     },
   });
 
-  var queryTransform = function(obj) {
-    var output = {};
-    output.$or = convertQueryObjects(obj.$any);
-    output.$and = convertQueryObjects(obj.$all);
-    return output;
-  };
+  // var queryTransform = function(obj) {
+  //   var output = {};
+  //   if (obj.$any) {
+  //     output.$or = convertQueryObjects(obj.$any);
+  //   }
+  //   if (obj.$all) {
+  //     output.$and = convertQueryObjects(obj.$all);
+  //   }
+  //   return output;
+  // };
 
-  var convertQueryObjects = function(obj) {
-    var lst = [];
-    var attributes = Object.keys(obj);
-    for (var i = 0; i < attributes.length; i++) {
-      var add = {};
-      var name = "profile." + attributes[i];
-      add[name] = insertIn(obj[attributes[i]]);
-      lst.push(add);
-    }
-    return lst;
-  }
+  // var convertQueryObjects = function(obj) {
+  //   var lst = [];
+  //   var attributes = Object.keys(obj);
+  //   for (var i = 0; i < attributes.length; i++) {
+  //     var add = {};
+  //     var name = "profile." + attributes[i];
+  //     add[name] = insertIn(obj[attributes[i]]);
+  //     lst.push(add);
+  //   }
+  //   return lst;
+  // }
 
-  var insertIn = function(item) {
-    if (item.constructor === Array) {
-      return {$in: item};
-    }
-    else {
-      return item;
-    }
-  }
+  // var insertIn = function(item) {
+  //   if (item.constructor === Array) {
+  //     return {$in: item};
+  //   }
+  //   else {
+  //     return item;
+  //   }
+  // }
 
 }
 
@@ -141,8 +159,8 @@ if (Meteor.isServer) {
 }
 
 Meteor.methods({
-  filterUsers: function(filter) {
-    var users = Meteor.users.find(filter).fetch();
-    return users;
-  }
+  // filterUsers: function(filter) {
+  //   var users = Meteor.users.find(filter).fetch();
+  //   return users;
+  // }
 });
