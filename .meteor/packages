@@ -21,3 +21,4 @@ insecure                # Allow all DB writes from clients (for prototyping)
 accounts-ui
 accounts-password
 ryanmadden:cerebro
+iron:router

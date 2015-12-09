@@ -1,9 +1,10 @@
-<head>
-  <title>Cerebro Demo</title>
-</head>
+<template name="user">
+  <p>{{username}}</p>
+</template> 
 
-<body>
+<template name="demo">
   <div class="container">
+    {{> loginButtons}}
     <h1>Welcome to our user querying engine!</h1>
     <div class="half-width">
       <h3>Users</h3>
@@ -12,7 +13,7 @@
       {{/each}}
     </div>
     <div class="half-width">
-      <h3>Filtered Users</h3>
+      <h3>Send Notifications</h3>
       <div class="container-btn">
         <button id="filter-camera">Users with a camera</button>
         <button id="filter-tech">Users who work at a tech company</button>
@@ -24,9 +25,18 @@
       {{> user}}
       {{/each}}
     </div>
+    <div class="half-width">
+      {{#if currentUser }}
+      <h3>My Notifications</h3>
+      {{/if}}
+      <h3>All Notifications</h3>
+      {{#each notifications}}
+      {{> notification}}
+      {{/each}}
+    </div>
   </div>
-</body>
+</template>
 
-<template name="user">
-  <p>{{username}}</p>
-</template>   
+<template name="notification">
+  <p>{{text}}</p>
+</template>

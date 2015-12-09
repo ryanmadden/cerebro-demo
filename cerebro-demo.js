@@ -1,3 +1,5 @@
+notifications = new Meteor.Collection('notifications');
+
 if (Meteor.isClient) {
 
   Session.set('userFilter', {
@@ -15,7 +17,7 @@ if (Meteor.isClient) {
     passwordSignupFields: "USERNAME_ONLY"
   });
 
-  Template.body.helpers({
+  Template.demo.helpers({
     filteredUsers: function() {
       // var userFilter = {username: {$in: ["kevinchen", "ryanmadden"]}}; //Match any item in a list
       // userFilter = {"profile.first_name": 'Ryan'}; //Find by profile field
@@ -27,28 +29,42 @@ if (Meteor.isClient) {
       });
       return Session.get('filteredUsers');
     },
+    notifications: function() {
+      if (Meteor.user()) {
+        return notifications.find({"users._id": Meteor.user()._id}).fetch();
+      }
+      else {
+        return notifications.find({}).fetch();
+      }
+    },
     users: function() {
       return Meteor.users.find({}).fetch();
     }
   });
 
-  Template.body.events({
+  Template.demo.events({
     "click #filter-camera": function(event) {
       // Session.set('userFilter', {"profile.attributes": {$in: ['camera']}});
-      Session.set('userFilter', {
-        "$all": {"hasCamera": true}
-      });
+      var filterObj = {"$all": {"hasCamera": true}};
+      Session.set('userFilter', filterObj);
+      Meteor.call('createNotification', "Take a picture with your camera!", filterObj);
     },
     "click #filter-tech": function(event) {
       // Session.set('userFilter', {"profile.company": {$in: ['Google', 'IndieGoGo']}});
-      Session.set('userFilter', {"$all": {"company": ["Google", "IndieGoGo"]}});
+      var filterObj = {"$all": {"company": ["Google", "IndieGoGo"]}}
+      Session.set('userFilter', filterObj);
+      Meteor.call('createNotification', "You work at a tech company!", filterObj);
     },
     "click #filter-beer": function(event) {
       // Session.set('userFilter', {"profile.age": {$gte: 21}});
-      Session.set('userFilter', {"$all": {"age": {"$gt": 20}}});
+      var filterObj = {"$all": {"age": {"$gt": 20}}};
+      Session.set('userFilter', filterObj);
+      Meteor.call('createNotification', "Go to the nearest bar and buy a drink!", filterObj);
     },
     "click #filter-dog": function(event) {
-      Session.set('userFilter', {"$all": {"hasDog": true}});
+      var filterObj = {"$all": {"hasDog": true}};
+      Session.set('userFilter', filterObj);
+      Meteor.call('createNotification', "Pet your dog!", filterObj);
     },
     "click #filter-master": function(event) {
       var specialUserProfile = {
@@ -62,6 +78,7 @@ if (Meteor.isClient) {
         }
       };
       Session.set('userFilter', specialUserProfile);
+      Meteor.call('createNotification', "You're older than 20, work at a tech company, and have a camera and a dog.", filterObj);
     },
   });
 
@@ -151,6 +168,7 @@ if (Meteor.isServer) {
           last_name: 'Zhang',
           age: 30,
           company: 'Northwestern',
+          hasDog: true,
           attributes: ['dog', 'camera'],
         }
       });
@@ -163,4 +181,15 @@ Meteor.methods({
   //   var users = Meteor.users.find(filter).fetch();
   //   return users;
   // }
+  createNotification: function(message, obj) {
+    Meteor.call('filterUsers', obj, function(e,r) {
+      notifications.insert({
+        text: message,
+        users: r
+      });
+    });
+  },
+  clearNotifications: function() {
+    notifications.remove({});
+  }
 });
