@@ -29,7 +29,9 @@
       {{#if currentUser }}
       <h3>My Notifications</h3>
       {{/if}}
+      {{#unless currentUser}}
       <h3>All Notifications</h3>
+      {{/unless}}
       {{#each notifications}}
       {{> notification}}
       {{/each}}

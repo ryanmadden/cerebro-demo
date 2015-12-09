@@ -2,16 +2,7 @@ notifications = new Meteor.Collection('notifications');
 
 if (Meteor.isClient) {
 
-  Session.set('userFilter', {
-    "$any": {
-      "company": ["Google", "IndieGoGo"],
-      "age": {"$gt": 20}
-    },
-    "$all": {
-      "hasCamera": true,
-      "hasDog": true
-    }
-  });
+  Session.set('userFilter', {});
 
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
